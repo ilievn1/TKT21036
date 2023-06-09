@@ -1,23 +1,24 @@
-# Install base-image node 16.x
-FROM node:16.20
+# Install base-image golang 1.16
+FROM golang:1.16
 
+# Set pwd
 WORKDIR /usr/src/app
-
-# Cache deps
-COPY package.json .
-
-# install pkgs
-RUN npm install
 
 # Copy src code, images, etc.
 COPY . .
 
-# Use npm package called serve to serve the project in port 5000:
-RUN npm run build
-RUN npm install -g serve
+# build app
+RUN go build
 
-# Open port 5000
-EXPOSE 5000
+# Open app port 8080
+EXPOSE 8080
 
-# Launch app -> Test with static serve
-CMD [ "serve", "-s", "-l", "5000", "build" ]
+# Verify artifact has compiled by running tests
+RUN go test ./...
+
+# Set Env as requested in README.md 
+ENV PORT=8080
+ENV REQUEST_ORIGIN=http://localhost:8080/ping
+
+# Launch server
+CMD ["./server"]
