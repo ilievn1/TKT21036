@@ -1,17 +1,23 @@
-# Install base-image JDK version 8
-FROM openjdk:8
+# Install base-image node 16.x
+FROM node:16.20
 
-# Copy the shell script in default container directory
-COPY mvnw.sh .
+WORKDIR /usr/src/app
 
-# Copy the actual app code in default container directory
+# Cache deps
+COPY package.json .
+
+# install pkgs
+RUN npm install
+
+# Copy src code, images, etc.
 COPY . .
 
-# Build app by specified method according to README.md
-RUN ./mvnw.sh package
+# Use npm package called serve to serve the project in port 5000:
+RUN npm run build
+RUN npm install -g serve
 
-# Open port 8080
-EXPOSE 8080
+# Open port 5000
+EXPOSE 5000
 
-# Launch app -> should produce "Success" text in browser
-CMD [ "java", "-jar", "./target/docker-example-1.1.3.jar" ]
+# Launch app -> Test with static serve
+CMD [ "serve", "-s", "-l", "5000", "build" ]
