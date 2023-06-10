@@ -1,0 +1,2 @@
+docker build . -t frn && docker build ../example-backend -t srv
+docker run -d -p 5000:5000 frn && docker run -d -p 8080:8080 srv
